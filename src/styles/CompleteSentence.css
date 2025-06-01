@@ -1,0 +1,55 @@
+.completion-container {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.sentence-display {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sentence-word {
+  margin: 0 6px;
+}
+
+.option-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.fill-option {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #007bff;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.fill-option.selected {
+  background-color: #d6f0ff;
+}
+
+.fill-option.correct {
+  background-color: #d4edda;
+  border-color: #28a745;
+}
+
+.fill-option.wrong {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+}
+
+.submit-btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

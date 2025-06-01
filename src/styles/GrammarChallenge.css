@@ -1,0 +1,52 @@
+.grammar-container {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.word-btn {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #007bff;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.word-btn.used {
+  background-color: #e7e7e7;
+  color: #aaa;
+  cursor: default;
+}
+
+.selected-area {
+  min-height: 2rem;
+  margin-bottom: 1rem;
+}
+
+.selected-word {
+  display: inline-block;
+  margin: 0 6px;
+  padding: 0.5rem 0.75rem;
+  background: #d6f0ff;
+  border-radius: 4px;
+}
+
+.submit-btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}

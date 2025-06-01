@@ -1,0 +1,40 @@
+.card-container {
+  margin-top: 2rem;
+}
+
+.sanskrit-word {
+  font-size: 2rem;
+  color: #222;
+}
+
+.options {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.option-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: white;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.option-btn:hover {
+  background: #e6f0ff;
+}
+
+.correct {
+  background-color: #d4edda;
+  border-color: #28a745;
+}
+
+.wrong {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+}
