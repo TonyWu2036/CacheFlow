@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { generateAIQuestions } from "./utils/perplexity";
 import "./styles/global.css";
 import "./styles/CategorySelector.css";
 import "./styles/Reactions.css";
@@ -9,25 +10,214 @@ import GrammarChallenge from "./components/GrammarChallenge";
 import completionData from "./data/completion.json";
 import CompleteSentence from "./components/CompleteSentence";
 
+//TONY, JIVESH --> go to UTILS/SERVER.JS --> node server.js
+//make .env file @ root directory, PERPLEXITY_KEY =
+//WAIT FOR ENVIRONMENT TO FINISH LOADING BEFORE STARTING QUESTIONS
+//IT LOADS UP ALL THE QUESTIONS AT ONCE @ START 
+
+
 function App() {
+
+  // STATE MANAGEMENT HERE
   const [category, setCategory] = useState("Fruits");
   const [challengeType, setChallengeType] = useState("Word Matching");
+  const [currentLevel, setCurrentLevel] = useState("LEVEL_1");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
   const [reaction, setReaction] = useState(null);
 
-  const categories = [
-    "Fruits", "Vegetables", "Animals",
-    "Places", "Colors", "Vehicles", "Clothing"
-  ];
+  // AI-generated questions data structure
+  // This stores all questions generated from the Perplexity API
+  // Structure: LEVEL_X -> challenge_type -> category (for word_matching only)
+  const [aiData, setAiData] = useState({
+    LEVEL_1: { 
+      word_matching: { Fruits: [], Vegetables: [], Animals: [], Places: [], Colors: [], Vehicles: [], Clothing: [] }, 
+      grammar_challenge: [], 
+      complete_sentence: [] 
+    },
+    LEVEL_2: { 
+      word_matching: { Fruits: [], Vegetables: [], Animals: [], Places: [], Colors: [], Vehicles: [], Clothing: [] }, 
+      grammar_challenge: [], 
+      complete_sentence: [] 
+    },
+    LEVEL_3: { 
+      word_matching: { Fruits: [], Vegetables: [], Animals: [], Places: [], Colors: [], Vehicles: [], Clothing: [] }, 
+      grammar_challenge: [], 
+      complete_sentence: [] 
+    },
+    loading: true,
+    error: null
+  });
 
-  const challengeTypes = [
-    "Word Matching", "Grammar Challenge", "Complete the Sentence"
-  ];
+  //Available categories & challenges
+  const categories = ["Fruits", "Vegetables", "Animals", "Places", "Colors", "Vehicles", "Clothing"];
+  const challengeTypes = ["Word Matching", "Grammar Challenge", "Complete the Sentence"];
 
-  const filteredData = levelData.filter(item => item.category === category);
-  const currentWord = filteredData[currentIndex % filteredData.length];
+  /**
+    Cleaning corrupted Sanskrit text from API responses
+    - Removing any numeric codes (e.g., "मार746;रः" -> "मार्जारः")
+    - Preserves complete_sentence and grammar_challenge arrays intact
+    - Only cleans sanskrit text in word_matching data
+   */
+  const cleanSanskritData = (data) => {
+    if (!data) return data;
+    
+    if (Array.isArray(data)) {
+      return data.map(item => cleanSanskritData(item));
+    }
+    
+    if (typeof data === 'object') {
+      const cleaned = {};
+      for (const [key, value] of Object.entries(data)) {
+        if (key === 'complete_sentence' || key === 'grammar_challenge') {
+          // Preserve these arrays exactly as they are
+          cleaned[key] = value;
+        } else if (key === 'sanskrit' && typeof value === 'string') {
+          // Only clean corrupted Sanskrit text in word_matching
+          cleaned[key] = value.replace(/\d+;/g, '').replace(/[0-9]/g, '');
+        } else if (key === 'sanskrit_corrected') {
+          cleaned['sanskrit'] = value;
+        } else {
+          cleaned[key] = cleanSanskritData(value);
+        }
+      }
+      return cleaned;
+    }
+    
+    return data;
+  };
+
+  /**
+   * Generating all questions from Perplexity API on component mount
+   * - Sends the big ass prompt to get Sanskrit learning questions
+   * - Cleaning any corrupted data before storing in state
+   * - Handles errors and fallback to static data
+   */
+  useEffect(() => {
+    const generateAllQuestions = async () => {
+      console.log("Starting question generation...");
+      setAiData(prev => ({ ...prev, loading: true, error: null }));
+      
+      try {
+        // Structured prompt for Perplexity API to generate Sanskrit questions
+        // Format: JSON with LEVEL_1/2/3 -> word_matching/grammar_challenge/complete_sentence
+        const prompt = `Generate Sanskrit learning questions in JSON format. Return only valid JSON without markdown formatting.
+
+{
+  "LEVEL_1": {
+    "word_matching": {
+      "Fruits": [{"category": "Fruits", "sanskrit": "सेबः", "english": "Apple"}, {"category": "Fruits", "sanskrit": "केलः", "english": "Banana"}, {"category": "Fruits", "sanskrit": "आम्रः", "english": "Mango"}],
+      "Vegetables": [{"category": "Vegetables", "sanskrit": "आलुकम्", "english": "Potato"}, {"category": "Vegetables", "sanskrit": "वर्ताकी", "english": "Brinjal"}, {"category": "Vegetables", "sanskrit": "गाजरः", "english": "Carrot"}],
+      "Animals": [{"category": "Animals", "sanskrit": "सिंहः", "english": "Lion"}, {"category": "Animals", "sanskrit": "गजः", "english": "Elephant"}, {"category": "Animals", "sanskrit": "कुक्कुरः", "english": "Dog"}],
+      "Places": [{"category": "Places", "sanskrit": "विद्यालयः", "english": "School"}, {"category": "Places", "sanskrit": "गृहः", "english": "Home"}, {"category": "Places", "sanskrit": "वनम्", "english": "Forest"}],
+      "Colors": [{"category": "Colors", "sanskrit": "नीलः", "english": "Blue"}, {"category": "Colors", "sanskrit": "लोहितः", "english": "Red"}, {"category": "Colors", "sanskrit": "हरितः", "english": "Green"}],
+      "Vehicles": [{"category": "Vehicles", "sanskrit": "यानम्", "english": "Vehicle"}, {"category": "Vehicles", "sanskrit": "रथः", "english": "Chariot"}, {"category": "Vehicles", "sanskrit": "विमानम्", "english": "Aeroplane"}],
+      "Clothing": [{"category": "Clothing", "sanskrit": "शर्टः", "english": "Shirt"}, {"category": "Clothing", "sanskrit": "पादत्राणम्", "english": "Shoes"}, {"category": "Clothing", "sanskrit": "वस्त्राणि", "english": "Clothes"}]
+    },
+    "grammar_challenge": [{"correct": ["रामः", "पुस्तकम्", "पठति"]}, {"correct": ["सीता", "फलम्", "खादति"]}, {"correct": ["बालकः", "क्रीडति"]}],
+    "complete_sentence": [{"id": 1, "sentence": ["रामः", "___", "पठति"], "correct": "पुस्तकम्", "options": ["पुस्तकम्", "गजः", "वनम्"]}, {"id": 2, "sentence": ["सीता", "___", "खादति"], "correct": "फलम्", "options": ["फलम्", "गृहम्", "पुस्तकम्"]}, {"id": 3, "sentence": ["बालकः", "___", "धावति"], "correct": "वनम्", "options": ["वनम्", "गजः", "पुस्तकम्"]}]
+  },
+  "LEVEL_2": {
+    "word_matching": {
+      "Fruits": [{"category": "Fruits", "sanskrit": "दाडिमम्", "english": "Pomegranate"}, {"category": "Fruits", "sanskrit": "नारङ्गम्", "english": "Orange"}, {"category": "Fruits", "sanskrit": "द्राक्षाफलम्", "english": "Grapes"}],
+      "Vegetables": [{"category": "Vegetables", "sanskrit": "बीजपूरकः", "english": "Cucumber"}, {"category": "Vegetables", "sanskrit": "लशुनम्", "english": "Garlic"}, {"category": "Vegetables", "sanskrit": "पलाण्डुः", "english": "Onion"}],
+      "Animals": [{"category": "Animals", "sanskrit": "मार्जारः", "english": "Cat"}, {"category": "Animals", "sanskrit": "अश्वः", "english": "Horse"}, {"category": "Animals", "sanskrit": "वृषभः", "english": "Bull"}],
+      "Places": [{"category": "Places", "sanskrit": "नगरम्", "english": "City"}, {"category": "Places", "sanskrit": "दुकानम्", "english": "Shop"}, {"category": "Places", "sanskrit": "अस्पतालयः", "english": "Hospital"}],
+      "Colors": [{"category": "Colors", "sanskrit": "श्वेतः", "english": "White"}, {"category": "Colors", "sanskrit": "कृष्णः", "english": "Black"}, {"category": "Colors", "sanskrit": "पीतः", "english": "Yellow"}],
+      "Vehicles": [{"category": "Vehicles", "sanskrit": "द्विचक्रिकायानम्", "english": "Bicycle"}, {"category": "Vehicles", "sanskrit": "मोटरयानम्", "english": "Car"}, {"category": "Vehicles", "sanskrit": "नौका", "english": "Boat"}],
+      "Clothing": [{"category": "Clothing", "sanskrit": "पेट्टिकः", "english": "Skirt"}, {"category": "Clothing", "sanskrit": "टोपी", "english": "Cap"}, {"category": "Clothing", "sanskrit": "चश्मकः", "english": "Glasses"}]
+    },
+    "grammar_challenge": [{"correct": ["गुरुः", "विद्यालयम्", "गच्छति"]}, {"correct": ["बालिका", "क्रीडाङ्गणम्", "धावति"]}, {"correct": ["गजः", "वनम्", "गच्छति"]}],
+    "complete_sentence": [{"id": 1, "sentence": ["गुरुः", "___", "गच्छति"], "correct": "विद्यालयम्", "options": ["विद्यालयम्", "गजः", "बालकः"]}, {"id": 2, "sentence": ["बालिका", "___", "धावति"], "correct": "क्रीडाङ्गणम्", "options": ["क्रीडाङ्गणम्", "फलम्", "पुस्तकालयः"]}, {"id": 3, "sentence": ["गजः", "___", "पिबति"], "correct": "जलम्", "options": ["जलम्", "फलम्", "गृहम्"]}]
+  },
+  "LEVEL_3": {
+    "word_matching": {
+      "Fruits": [{"category": "Fruits", "sanskrit": "कर्पूरफलम्", "english": "Papaya"}, {"category": "Fruits", "sanskrit": "जम्बीरम्", "english": "Lemon"}, {"category": "Fruits", "sanskrit": "नारिकेलः", "english": "Coconut"}],
+      "Vegetables": [{"category": "Vegetables", "sanskrit": "कट्टाहिपालकः", "english": "Spinach"}, {"category": "Vegetables", "sanskrit": "शिम्बीफलम्", "english": "Beans"}, {"category": "Vegetables", "sanskrit": "मूली", "english": "Radish"}],
+      "Animals": [{"category": "Animals", "sanskrit": "वृकः", "english": "Wolf"}, {"category": "Animals", "sanskrit": "मुषकः", "english": "Mouse"}, {"category": "Animals", "sanskrit": "मकरः", "english": "Crocodile"}],
+      "Places": [{"category": "Places", "sanskrit": "द्वारः", "english": "Gate"}, {"category": "Places", "sanskrit": "मार्गः", "english": "Road"}, {"category": "Places", "sanskrit": "पर्वतः", "english": "Mountain"}],
+      "Colors": [{"category": "Colors", "sanskrit": "धूसरः", "english": "Grey"}, {"category": "Colors", "sanskrit": "कपिलः", "english": "Brown"}, {"category": "Colors", "sanskrit": "रक्तवर्णः", "english": "Maroon"}],
+      "Vehicles": [{"category": "Vehicles", "sanskrit": "द्विचक्रिकम्", "english": "Scooter"}, {"category": "Vehicles", "sanskrit": "लोकयानम्", "english": "Bus"}, {"category": "Vehicles", "sanskrit": "रेलयानम्", "english": "Train"}],
+      "Clothing": [{"category": "Clothing", "sanskrit": "पायसुः", "english": "Shorts"}, {"category": "Clothing", "sanskrit": "धोती", "english": "Dhoti"}, {"category": "Clothing", "sanskrit": "कुर्तकम्", "english": "Kurta"}]
+    },
+    "grammar_challenge": [{"correct": ["अहं", "पत्रम्", "लिखामि"]}, {"correct": ["त्वम्", "गृहम्", "गच्छसि"]}, {"correct": ["सः", "पुस्तकम्", "पठति"]}],
+    "complete_sentence": [{"id": 1, "sentence": ["अहं", "___", "लिखामि"], "correct": "पत्रम्", "options": ["पत्रम्", "गजः", "वनम्"]}, {"id": 2, "sentence": ["त्वम्", "___", "गच्छसि"], "correct": "गृहम्", "options": ["गृहम्", "फलम्", "पुस्तकम्"]}, {"id": 3, "sentence": ["सः", "___", "पठति"], "correct": "पुस्तकम्", "options": ["पुस्तकम्", "गजः", "वनम्"]}]
+  }
+}
+
+Generate similar structure with 5 items per category instead of 3.`;
+
+        // Call Perplexity API to generate questions
+        const result = await generateAIQuestions(prompt);
+        
+        if (result && result.LEVEL_1) {
+        // Clean any corrupted data from API response
+          const cleanedResult = cleanSanskritData(result);
+          setAiData({ ...cleanedResult, loading: false, error: null });
+          console.log("Successfully set AI data");
+        } else {
+          console.error("Invalid result structure");
+          setAiData(prev => ({ ...prev, error: "Invalid response", loading: false }));
+        }
+        
+      } catch (error) {
+        console.error("Error generating questions:", error);
+        setAiData(prev => ({ ...prev, error: error.message, loading: false }));
+      }
+    };
+
+    generateAllQuestions();
+  }, []);
+
+
+
+    /**
+   * Get the current question based on challenge type, level, and category
+   * IMPORTANT PLS PLS NOTE--> Different challenge types have different data structures:
+   * - Word Matching: organized by category (aiData.LEVEL_X.word_matching.Fruits)
+   * - Grammar Challenge: direct array (aiData.LEVEL_X.grammar_challenge)
+   * - Complete Sentence: direct array (aiData.LEVEL_X.complete_sentence)
+   */
+
+  const getCurrentQuestion = () => {
+    let challengeKey;
+    
+    // Fix the key mapping
+    if (challengeType === "Word Matching") {
+      challengeKey = "word_matching";
+    } else if (challengeType === "Grammar Challenge") {
+      challengeKey = "grammar_challenge";
+    } else if (challengeType === "Complete the Sentence") {
+      challengeKey = "complete_sentence"; 
+    }
+    
+    let levelData;
+    if (challengeType === "Word Matching") {
+      levelData = aiData[currentLevel]?.word_matching?.[category];
+    } else {
+      levelData = aiData[currentLevel]?.[challengeKey];       // Grammar and Complete Sentence don't use categories - get direct array
+    }
+    
+    // If AI data is available and has questions, use it
+    if (levelData && levelData.length > 0) {
+      const question = levelData[currentIndex % levelData.length];
+      return question;
+    }
+    
+    // Fallback to static data
+    switch(challengeType) {
+      case "Word Matching":
+        const filteredData = levelData.filter(item => item.category === category);
+        return filteredData[currentIndex % filteredData.length];
+      case "Grammar Challenge":
+        return grammarData[currentIndex % grammarData.length];
+      case "Complete the Sentence":
+        return completionData[currentIndex % completionData.length];
+      default:
+        return null;
+    }
+  };
 
   const handleNext = (isCorrect) => {
     if (isCorrect) {
@@ -37,9 +227,10 @@ function App() {
       setWrongCount(prev => prev + 1);
       setReaction("wrong");
     }
+    
     setTimeout(() => {
       setReaction(null);
-      setCurrentIndex(prev => (prev + 1) % filteredData.length);
+      setCurrentIndex(prev => prev + 1);
     }, 1500);
   };
 
@@ -50,8 +241,38 @@ function App() {
     setWrongCount(0);
   };
 
+  const handleLevelChange = (level) => {
+    setCurrentLevel(level);
+    setCurrentIndex(0);
+    setCorrectCount(0);
+    setWrongCount(0);
+  };
+
+  const handleChallengeTypeChange = (type) => {
+    setChallengeType(type);
+    setCurrentIndex(0);
+    setCorrectCount(0);
+    setWrongCount(0);
+  };
+
+  const filteredData = levelData.filter(item => item.category === category);
+  const currentQuestion = getCurrentQuestion();
+
   return (
     <div className="app-container">
+      {aiData.loading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p>Preparing your learning environment...</p>
+        </div>
+      )}
+      
+      {aiData.error && (
+        <div className="error-banner">
+          System Note: {aiData.error} - Using fallback content
+        </div>
+      )}
+      
       <div className="app-header">
         <div className="title-block">
           <h1>🌍 Language Quest</h1>
@@ -62,18 +283,30 @@ function App() {
           <p>❌ Wrong: {wrongCount}</p>
         </div>
       </div>
-
+      
+      <div className="level-selector">
+        {["LEVEL_1", "LEVEL_2", "LEVEL_3"].map(level => (
+          <button
+            key={level}
+            className={`level-btn ${currentLevel === level ? 'active' : ''}`}
+            onClick={() => handleLevelChange(level)}
+          >
+            {level === "LEVEL_1" ? "Beginner" : level === "LEVEL_2" ? "Intermediate" : "Advanced"}
+          </button>
+        ))}
+      </div>
+      
       <div className="selectors">
         <select
           className="challenge-dropdown"
           value={challengeType}
-          onChange={(e) => setChallengeType(e.target.value)}
+          onChange={(e) => handleChallengeTypeChange(e.target.value)}
         >
           {challengeTypes.map((type) => (
             <option key={type} value={type}>{type}</option>
           ))}
         </select>
-
+        
         {challengeType === "Word Matching" && (
           <div className="category-selector">
             {categories.map((cat) => (
@@ -88,28 +321,28 @@ function App() {
           </div>
         )}
       </div>
-
+      
       {reaction === "correct" && <div className="emoji reaction-left">😊</div>}
       {reaction === "wrong" && <div className="emoji reaction-right">😢</div>}
-
-      {challengeType === "Word Matching" && (
+      
+      {challengeType === "Word Matching" && currentQuestion && (
         <WordCard
-          word={currentWord}
+          word={currentQuestion}
           onNext={handleNext}
-          allWords={filteredData}
+          allWords={aiData[currentLevel]?.word_matching?.[category] || filteredData}
         />
       )}
-
-      {challengeType === "Grammar Challenge" && (
+      
+      {challengeType === "Grammar Challenge" && currentQuestion && (
         <GrammarChallenge
-          sentenceData={grammarData[currentIndex % grammarData.length]}
+          sentenceData={currentQuestion}
           onNext={handleNext}
         />
       )}
-
-      {challengeType === "Complete the Sentence" && (
+      
+      {challengeType === "Complete the Sentence" && currentQuestion && (
         <CompleteSentence
-          data={completionData[currentIndex % completionData.length]}
+          data={currentQuestion}
           onNext={handleNext}
         />
       )}
