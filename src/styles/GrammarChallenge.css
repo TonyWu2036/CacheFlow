@@ -1,6 +1,7 @@
 .grammar-container {
   text-align: center;
   margin-top: 2rem;
+  font-family: 'Press Start 2P', cursive, monospace;
 }
 
 .word-bank {
@@ -14,16 +15,18 @@
 .word-btn {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  border: 2px solid #007bff;
-  background: white;
-  border-radius: 6px;
+  border: 3px solid #4B8B3B; /* Moss Green */
+  background: #A8D5BA; /* Olive Green */
+  border-radius: 0; /* Sharp corners */
   cursor: pointer;
   transition: 0.3s;
+  font-family: 'Press Start 2P', cursive, monospace;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
 }
 
 .word-btn.used {
-  background-color: #e7e7e7;
-  color: #aaa;
+  background-color: #7C5C3B; /* Earth Brown */
+  color: #D7E8F7; /* Cloud Blue */
   cursor: default;
 }
 
@@ -36,17 +39,20 @@
   display: inline-block;
   margin: 0 6px;
   padding: 0.5rem 0.75rem;
-  background: #d6f0ff;
-  border-radius: 4px;
+  background: #A8D5BA; /* Olive Green */
+  border: 3px solid #4B8B3B; /* Moss Green */
+  border-radius: 0; /* Sharp corners */
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
 }
 
 .submit-btn {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background-color: #355E3B; /* Deep Forest Green */
+  color: #D7E8F7; /* Cloud Blue */
+  border: 3px solid #7C5C3B; /* Earth Brown */
+  border-radius: 0; /* Sharp corners */
   cursor: pointer;
-  transition: 0.3s;
+  font-family: 'Press Start 2P', cursive, monospace;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
 }

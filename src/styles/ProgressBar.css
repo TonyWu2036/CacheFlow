@@ -1,0 +1,43 @@
+.progress-container {
+  width: 80%;
+  margin: 40px auto;
+}
+
+.progress-path {
+  height: 8px;
+  background:beige; /* Deep Forest Green */
+  border-radius: 0; /* Sharp corners */
+  position: relative;
+}
+
+.filled-path {
+  position: absolute;
+  height: 100%;
+  background: #6B8E23; /* Fern Green */
+  border-radius: 0; /* Sharp corners */
+  transition: width 0.5s ease;
+}
+
+.gem {
+  position: absolute;
+  top: -20px;
+  transform: translateX(-50%);
+  width: 54px;
+  height: 44px;
+  transition: opacity 0.3s;
+}
+
+.character-container {
+  position: absolute;
+  top: -30px;
+  transform: translateX(-50%);
+  transition: left 0.5s ease;
+}
+
+.sprite {
+  width: var(--frame-width, 96px);
+  height: var(--frame-height, 96px);
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  image-rendering: pixelated;
+}

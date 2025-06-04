@@ -1,13 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 body {
+  position: relative;
   margin: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f4f8;
-  color: #333;
+  font-family: "Press Start 2P", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #29434E;
+  min-height: 100vh;
 }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-image: url("/public/images/forest.gif");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  opacity: 1;
+  transition: opacity 0.8s ease-in-out;
+}
+
+body.level_2::before {
+  background-image: url("/public/images/battleground.gif");
+}
+
+body.level_3::before {
+  background-image: url("/public/images/boss.gif");
+}
+
+body.fade-out::before {
+  opacity: 0;
+}
+
 
 .app-container {
   text-align: center;
   padding: 4rem 1rem;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent overlay for readability */
+  border-radius: 0; /* Sharp corners for 8-bit style */
+  max-width: 800px;
+  margin: 2rem auto;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
 }
 
 .level-selector {
@@ -16,16 +53,100 @@ body {
   justify-content: center;
   margin: 1rem 0;
 }
+
 .level-btn {
   padding: 0.5rem 1.5rem;
-  border-radius: 20px;
-  border: 2px solid #e0e0e0;
-  background: #f8f9fa;
+  border-radius: 0; /* Sharp corners for 8-bit style */
+  border: 3px solid #355E3B; /* Deep Forest Green */
+  background: #A8D5BA; /* Olive Green */
+  color: #29434E; /* Shadow Blue */
   cursor: pointer;
   transition: all 0.3s ease;
+  font-family: "Press Start 2P", sans-serif;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
 }
+
+.level-btn:hover {
+  background: #6B8E23; /* Fern Green */
+  color: #D7E8F7; /* Cloud Blue */
+}
+
 .level-btn.active {
-  border-color: #2c3e50;
-  background: #2c3e50;
-  color: white;
+  border-color: #7C5C3B; /* Earth Brown */
+  background: #355E3B; /* Deep Forest Green */
+  color: #D7E8F7; /* Cloud Blue */
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+}
+
+
+.app-container {
+  text-align: center;
+  padding: 4rem 1rem;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent overlay for readability */
+  border-radius: 0; /* Sharp corners for 8-bit style */
+  max-width: 800px;
+  margin: 2rem auto;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+}
+
+.level-selector {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.level-btn {
+  padding: 0.5rem 1.5rem;
+  border-radius: 0; /* Sharp corners for 8-bit style */
+  border: 3px solid #355E3B; /* Deep Forest Green */
+  background: #A8D5BA; /* Olive Green */
+  color: #29434E; /* Shadow Blue */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Press Start 2P", sans-serif;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+}
+
+.level-btn:hover {
+  background: #6B8E23; /* Fern Green */
+  color: #D7E8F7; /* Cloud Blue */
+}
+
+.level-btn.active {
+  border-color: #7C5C3B; /* Earth Brown */
+  background: #355E3B; /* Deep Forest Green */
+  color: #D7E8F7; /* Cloud Blue */
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  color: #D7E8F7; /* Cloud Blue */
+  font-family: 'Press Start 2P', cursive, monospace;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+}
+
+.loading-overlay p {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+}
+
+.spinner {
+  width: 90px;
+  height: 90px;
+  background-image: url('/public/images/spinner.gif');
+  background-size: contain;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
 }

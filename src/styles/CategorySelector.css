@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* Category colors: light, earthy */
+.category-btn:nth-child(1) { background-color: #C7D3B0; border-color: #A9B78F; color: #29434E; }
+.category-btn:nth-child(2) { background-color: #D9E4C4; border-color: #B7C18A; color: #29434E; }
+.category-btn:nth-child(3) { background-color: #E6E9D7; border-color: #C3C9A3; color: #29434E; }
+.category-btn:nth-child(4) { background-color: #D0D8B0; border-color: #B0B87A; color: #29434E; }
+.category-btn:nth-child(5) { background-color: #E3E6C3; border-color: #C1C6A0; color: #29434E; }
+.category-btn:nth-child(6) { background-color: #DADFC9; border-color: #BFC5A3; color: #29434E; }
+.category-btn:nth-child(7) { background-color: #E8EAD2; border-color: #C9CCAB; color: #29434E; }
+
 .category-selector {
   display: flex;
   flex-wrap: wrap;
@@ -8,25 +19,29 @@
 
 .category-btn {
   padding: 0.6rem 1.2rem;
-  border: 2px solid #007bff;
-  border-radius: 8px;
-  background-color: white;
-  color: #007bff;
-  font-weight: 500;
+  border: 3px solid;
+  border-radius: 0;
+  font-weight: normal;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-family: 'Press Start 2P', cursive, monospace;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+  image-rendering: pixelated;
 }
 
 .category-btn:hover {
-  background-color: #e7f1ff;
+  background-color: #B7A07A; /* Path Tan */
+  color: #29434E;
+  border-color: #7C5C3B; /* Earth Brown */
 }
 
 .category-btn.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  background-color: #355E3B; /* Deep Forest Green */
+  color: #D7E8F7; /* Cloud Blue */
+  border-color: #7C5C3B; /* Earth Brown */
 }
 
+/* Header and title */
 .app-header {
   display: flex;
   align-items: flex-start;
@@ -39,6 +54,7 @@
   max-width: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
+  font-family: 'Press Start 2P', cursive, monospace;
 }
 
 .title-block {
@@ -46,23 +62,29 @@
   text-align: center;
 }
 
-
 .app-header h1 {
   margin-bottom: 0;
+  color: #355E3B; /* Deep Forest Green */
+  text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
 }
 
 .scoreboard {
   text-align: left;
   padding: 1rem 1.5rem;
-  background-color: #fff;
-  border: 2px solid #007bff;
-  border-radius: 10px;
+  background-color: #D7E8F7; /* Cloud Blue */
+  border: 3px solid #7C5C3B; /* Earth Brown */
+  border-radius: 0;
   font-size: 1.1rem;
-  min-width: 120px;
-  max-width: 180px;
+  min-width: 180px;
+  max-width: 300px;
   height: fit-content;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  margin-right: 1rem;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+  color: #29434E; /* Shadow Blue */
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+  font-family: 'Press Start 2P', cursive, monospace;
 }
 
 .selectors {
@@ -72,24 +94,32 @@
   gap: 1rem;
 }
 
+/* Challenge dropdowns: dark, earthy, white text */
+.challenge-dropdown:nth-of-type(1) { background-color: #2F4F4F; border-color: #1E2F2F; color: #FFFFFF; }
+.challenge-dropdown:nth-of-type(2) { background-color: #3B4C4B; border-color: #2A3A3A; color: #FFFFFF; }
+.challenge-dropdown:nth-of-type(3) { background-color: #1F3B3B; border-color: #142020; color: #FFFFFF; }
+
 .challenge-dropdown {
   padding: 0.6rem 1rem;
   font-size: 1rem;
-  border: 2px solid #007bff;
-  border-radius: 8px;
+  border: 3px solid;
+  border-radius: 0;
   outline: none;
-  background-color: white;
-  color: #007bff;
-  font-weight: 500;
+  font-weight: normal;
   cursor: pointer;
+  font-family: 'Press Start 2P', cursive, monospace;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
 }
 
 .challenge-dropdown:hover {
-  background-color: #e7f1ff;
+  background-color: #29434E; /* Shadow Blue */
+  color: #D7E8F7; /* Cloud Blue */
+  border-color: #355E3B; /* Deep Forest Green */
 }
 
 .placeholder {
   font-size: 1.2rem;
   margin-top: 2rem;
-  color: #555;
+  color: #29434E; /* Shadow Blue */
+  font-family: 'Press Start 2P', cursive, monospace;
 }

@@ -79,7 +79,7 @@ export const generateAIQuestions = async (prompt) => {
           }
         },
         temperature: 0.3,
-        max_tokens: 8000
+        max_tokens: 10000
       })
     });
 

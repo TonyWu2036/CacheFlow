@@ -6,6 +6,8 @@
 .sentence-display {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
+  font-family: 'Press Start 2P', cursive, monospace;
+  color: #29434E; /* Shadow Blue */
 }
 
 .sentence-word {
@@ -23,33 +25,72 @@
 .fill-option {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  border: 2px solid #007bff;
-  background: white;
-  border-radius: 6px;
+  border: 3px solid #4B8B3B; /* Moss Green */
+  background: #A8D5BA; /* Olive Green */
+  border-radius: 0; /* Sharp corners */
   cursor: pointer;
   transition: 0.3s;
+  font-family: 'Press Start 2P', cursive, monospace;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
 }
 
 .fill-option.selected {
-  background-color: #d6f0ff;
+  background-color: #6B8E23; /* Fern Green */
+  color: #D7E8F7; /* Cloud Blue */
 }
 
 .fill-option.correct {
-  background-color: #d4edda;
-  border-color: #28a745;
+  background-color: green; /* Deep Forest Green */
+  color: #D7E8F7; /* Cloud Blue */
+  border-color: #7C5C3B; /* Earth Brown */
 }
 
 .fill-option.wrong {
-  background-color: #f8d7da;
-  border-color: #dc3545;
+  background-color: red; /* Earth Brown */
+  color: #D7E8F7; /* Cloud Blue */
+  border-color: #29434E; /* Shadow Blue */
 }
 
 .submit-btn {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background-color: #355E3B; /* Deep Forest Green */
+  color: #D7E8F7; /* Cloud Blue */
+  border: 3px solid #7C5C3B; /* Earth Brown */
+  border-radius: 0; /* Sharp corners */
   cursor: pointer;
+  font-family: 'Press Start 2P', cursive, monospace;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+/* 8-bit hover animation */
+.submit-btn:hover {
+  background-color: #4B8B3B; /* Moss Green */
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
+  animation: pixelBounce 0.3s;
+}
+
+/* 8-bit click effect */
+.submit-btn:active {
+  transform: translateY(3px) translateX(3px);
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.2);
+}
+
+/* 8-bit pulse animation when enabled or focused */
+.submit-btn:focus {
+  animation: pixelPulse 0.8s infinite alternate;
+}
+
+/* 8-bit animations */
+@keyframes pixelBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes pixelPulse {
+  0% { background-color: #355E3B; }
+  100% { background-color: #4B8B3B; }
 }
